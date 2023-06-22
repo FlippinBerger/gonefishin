@@ -58,42 +58,6 @@ fn add_blast_zone(mut commands: Commands, query: Query<&Window>) {
     let left = 0. - (window_w / 2.) - 150.;
     let right = (window_w / 2.) + 150.;
 
-    // commands
-    //     .spawn(BlastZone {})
-    //     .insert(TransformBundle::from(Transform::from_xyz(0., 0., 1.)))
-    //     .with_children(|children| {
-    //         children
-    //             .spawn(Collider::cuboid(window_w, 10.))
-    //             .insert(ActiveCollisionTypes::default() | ActiveCollisionTypes::KINEMATIC_STATIC)
-    //             .insert(ActiveEvents::COLLISION_EVENTS)
-    //             // .insert(CollisionGroups::new(
-    //             //     Group::from_bits(0b0001).unwrap(),
-    //             //     Group::from_bits(0b0010).unwrap(),
-    //             // ))
-    //             .insert(TransformBundle::from(Transform::from_xyz(0., bottom, 0.)))
-    //             .insert(Sensor);
-    //         children
-    //             .spawn(Collider::cuboid(10., window_h))
-    //             .insert(ActiveCollisionTypes::default() | ActiveCollisionTypes::KINEMATIC_STATIC)
-    //             .insert(ActiveEvents::COLLISION_EVENTS)
-    //             // .insert(CollisionGroups::new(
-    //             //     Group::from_bits(0b0001).unwrap(),
-    //             //     Group::from_bits(0b0010).unwrap(),
-    //             // ))
-    //             .insert(TransformBundle::from(Transform::from_xyz(right, 0., 0.)))
-    //             .insert(Sensor);
-    //         children
-    //             .spawn(Collider::cuboid(10., window_h))
-    //             .insert(ActiveCollisionTypes::default() | ActiveCollisionTypes::KINEMATIC_STATIC)
-    //             .insert(ActiveEvents::COLLISION_EVENTS)
-    //             // .insert(CollisionGroups::new(
-    //             //     Group::from_bits(0b0001).unwrap(),
-    //             //     Group::from_bits(0b0010).unwrap(),
-    //             // ))
-    //             .insert(TransformBundle::from(Transform::from_xyz(left, 0., 0.)))
-    //             .insert(Sensor);
-    //     });
-
     commands
         .spawn(RigidBody::Fixed)
         .insert(Collider::cuboid(window_w, 10.))
@@ -131,15 +95,6 @@ fn add_blast_zone(mut commands: Commands, query: Query<&Window>) {
         .insert(BlastZone {});
 }
 
-// fn blast_zone_collisions(
-//     mut commands: Commands,
-//     mut collision_events: EventReader<CollisionEvent>,
-// ) {
-//     for event in collision_events.iter() {
-//         info!("Received event: {:?}", event);
-//     }
-// }
-
 fn blast_zone_collisions(
     mut commands: Commands,
     rap_ctx: Res<RapierContext>,
@@ -158,21 +113,3 @@ fn blast_zone_collisions(
         }
     }
 }
-
-// fn blast_zone_collisions(
-//     mut commands: Commands,
-//     rap_ctx: Res<RapierContext>,
-//     mut query: Query<Entity, With<BlastZone>>,
-// ) {
-//     let bz = query.single_mut();
-//     for contact_pair in rap_ctx.contacts_with(bz) {
-//         let other_coll = if contact_pair.collider1() == bz {
-//             contact_pair.collider2()
-//         } else {
-//             contact_pair.collider1()
-//         };
-
-//         info!("removing entity");
-//         commands.entity(other_coll).despawn();
-//     }
-// }
