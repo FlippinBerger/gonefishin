@@ -17,6 +17,7 @@ fn main() {
         .add_plugin(level::LevelPlugin)
         .add_plugin(enemy::EnemyPlugin)
         .add_startup_system(setup_camera)
+        // TODO remove this only for looking around when dev testing
         .add_system(camera_controller)
         .run();
 }
@@ -28,6 +29,7 @@ fn setup_camera(mut commands: Commands) {
     commands.spawn((Camera2dBundle::default(), GameCamera));
 }
 
+// Only used to check on colliders and stuff when deving
 fn camera_controller(
     time: Res<Time>,
     keys: Res<Input<KeyCode>>,

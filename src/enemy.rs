@@ -1,5 +1,7 @@
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use bevy_rapier2d::prelude::*;
+
+use rand::Rng;
 use std::time::Duration;
 
 use crate::types;
@@ -11,7 +13,6 @@ impl Plugin for EnemyPlugin {
         app.add_startup_system(setup_fish_spawning)
             .add_system(spawn_fish)
             .add_system(fish_swim);
-        // .add_system(fish_despawn);
     }
 }
 
@@ -40,12 +41,16 @@ fn spawn_fish(
 ) {
     let window = query.single();
     let window_width = window.width() / 2.;
+    let window_height = window.height() / 2.;
 
     config.timer.tick(time.delta());
 
     if config.timer.just_finished() {
         // get a random depth to spawn at
-        let random_depth = 20.;
+        // let random_depth = 20.;
+
+        let mut rng = rand::thread_rng();
+        let random_depth = rng.gen_range(-1. * window_height..150.);
 
         // spawn on or left or right side randomly
         let direction = types::Dir::Backward;
@@ -73,10 +78,8 @@ fn spawn_fish(
                 fish_type,
                 direction,
             },
-            RigidBody::KinematicPositionBased,
             Collider::cuboid(10., 5.),
         ));
-        // .insert(ActiveCollisionTypes::default() | ActiveCollisionTypes::KINEMATIC_STATIC);
     }
 }
 
@@ -97,14 +100,11 @@ fn fish_despawn(
         match fish.direction {
             types::Dir::Forward => {
                 if trans.translation.x > 0. && !vis.is_visible_in_view() {
-                    info!("despawning entity {:?}", entity);
                     commands.entity(entity).despawn();
                 }
             }
             types::Dir::Backward => {
-                // info!("backward check: {}", trans.translation.x);
                 if trans.translation.x < 0. && vis.is_visible_in_view() {
-                    info!("despawning entity {:?}", entity);
                     commands.entity(entity).despawn();
                 }
             }
@@ -114,6 +114,6 @@ fn fish_despawn(
 
 fn setup_fish_spawning(mut commands: Commands) {
     commands.insert_resource(FishSpawnConfig {
-        timer: Timer::new(Duration::from_secs(2), TimerMode::Once),
+        timer: Timer::new(Duration::from_secs(2), TimerMode::Repeating),
     })
 }

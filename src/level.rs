@@ -39,7 +39,6 @@ fn add_ground(
             .add(shape::Quad::new(Vec2::new(window.width(), water_depth)).into())
             .into(),
         material: materials.add(ColorMaterial::from(Color::hex("2063a5").unwrap())),
-        // transform: Transform::from_xyz(0., top - 150. - (water_depth / 2.), 0.),
         transform: Transform::from_xyz(0., top - (water_depth / 2.), 0.),
         ..default()
     });
