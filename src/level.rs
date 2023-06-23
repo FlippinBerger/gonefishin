@@ -107,7 +107,6 @@ fn blast_zone_collisions(
                 contact_pair.collider1()
             };
 
-            info!("removing entity");
             commands.entity(other_coll).despawn();
         }
     }

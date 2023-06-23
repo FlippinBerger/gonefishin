@@ -47,13 +47,17 @@ fn spawn_fish(
 
     if config.timer.just_finished() {
         // get a random depth to spawn at
-        // let random_depth = 20.;
-
         let mut rng = rand::thread_rng();
-        let random_depth = rng.gen_range(-1. * window_height..150.);
+        let rand_depth = rng.gen_range(-1. * window_height..150.);
 
         // spawn on or left or right side randomly
-        let direction = types::Dir::Backward;
+        let rand_dir = rng.gen_range(0..2);
+
+        let direction = if rand_dir == 0 {
+            types::Dir::Backward
+        } else {
+            types::Dir::Forward
+        };
 
         let starting_x = match direction {
             types::Dir::Forward => (window_width * -1.) - 20.,
@@ -71,7 +75,7 @@ fn spawn_fish(
                     .add(shape::Quad::new(Vec2::new(15., 10.)).into())
                     .into(),
                 material: materials.add(ColorMaterial::from(Color::hex("fc6a03").unwrap())),
-                transform: Transform::from_xyz(starting_x, random_depth, 1.),
+                transform: Transform::from_xyz(starting_x, rand_depth, 1.),
                 ..default()
             },
             Fish {
@@ -88,26 +92,6 @@ fn fish_swim(time: Res<Time>, mut query: Query<(&Fish, &mut Transform)>) {
         match fish.direction {
             types::Dir::Forward => transform.translation.x += 50. * time.delta_seconds() * 2.,
             types::Dir::Backward => transform.translation.x -= 50. * time.delta_seconds() * 2.,
-        }
-    }
-}
-
-fn fish_despawn(
-    mut commands: Commands,
-    mut query: Query<(Entity, &Fish, &Transform, &ComputedVisibility)>,
-) {
-    for (entity, fish, trans, vis) in query.iter_mut() {
-        match fish.direction {
-            types::Dir::Forward => {
-                if trans.translation.x > 0. && !vis.is_visible_in_view() {
-                    commands.entity(entity).despawn();
-                }
-            }
-            types::Dir::Backward => {
-                if trans.translation.x < 0. && vis.is_visible_in_view() {
-                    commands.entity(entity).despawn();
-                }
-            }
         }
     }
 }
