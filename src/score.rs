@@ -1,21 +1,28 @@
 use bevy::prelude::*;
 
+use crate::state;
+
 pub struct ScorePlugin;
 
 impl Plugin for ScorePlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(setup_score).add_system(update_score);
+        app.add_startup_system(setup_score)
+            .insert_resource(Score { val: 0 })
+            .add_system(update_score.in_set(OnUpdate(state::AppState::Running)));
     }
 }
 
-#[derive(Component)]
-struct Score {
-    val: i32,
+#[derive(Resource)]
+pub struct Score {
+    pub val: u32,
 }
+
+#[derive(Component)]
+struct ScoreText {}
 
 fn setup_score(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
-        Score { val: 0 },
+        ScoreText {},
         TextBundle::from_section(
             "912834",
             TextStyle {
@@ -37,11 +44,8 @@ fn setup_score(mut commands: Commands, asset_server: Res<AssetServer>) {
     ));
 }
 
-fn update_score(mut score_query: Query<&mut Score>, mut text_q: Query<&mut Text, With<Score>>) {
-    let mut score = score_query.single_mut();
+fn update_score(score: Res<Score>, mut text_q: Query<&mut Text, With<ScoreText>>) {
     let mut text = text_q.single_mut();
-
-    score.val += 10;
 
     text.sections[0].value = format!("{}", score.val);
 }

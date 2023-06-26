@@ -6,4 +6,5 @@ pub enum AppState {
     Running,
     Paused,
     MainMenu,
+    GameOver,
 }

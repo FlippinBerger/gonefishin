@@ -21,14 +21,9 @@ fn main() {
         .add_plugin(player::PlayerPlugin)
         .add_plugin(score::ScorePlugin)
         .add_startup_system(setup_camera)
-        .add_startup_system(check_state)
         // TODO remove this only for looking around when dev testing
         // .add_system(camera_controller)
         .run();
-}
-
-fn check_state(state: Res<State<state::AppState>>) {
-    info!("we are in the {:?} state", state.0);
 }
 
 #[derive(Component)]

@@ -1,15 +1,20 @@
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use bevy_rapier2d::prelude::*;
 
+use crate::state;
+
 pub struct LevelPlugin;
 
 impl Plugin for LevelPlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(add_ground)
             .add_startup_system(add_blast_zone)
-            .add_system(blast_zone_collisions);
+            .add_system(blast_zone_collisions.in_set(OnUpdate(state::AppState::Running)));
     }
 }
+
+#[derive(Component)]
+pub struct Ground {}
 
 fn add_ground(
     mut commands: Commands,
@@ -22,14 +27,17 @@ fn add_ground(
     let top = (window.height() / 2.) - 150.;
 
     // spawn land
-    commands.spawn(MaterialMesh2dBundle {
-        mesh: meshes
-            .add(shape::Quad::new(Vec2::new(window.width(), 30.)).into())
-            .into(),
-        material: materials.add(ColorMaterial::from(Color::hex("c4a484").unwrap())),
-        transform: Transform::from_xyz(0., top, 1.),
-        ..default()
-    });
+    commands.spawn((
+        Ground {},
+        MaterialMesh2dBundle {
+            mesh: meshes
+                .add(shape::Quad::new(Vec2::new(window.width(), 30.)).into())
+                .into(),
+            material: materials.add(ColorMaterial::from(Color::hex("c4a484").unwrap())),
+            transform: Transform::from_xyz(0., top, 0.1),
+            ..default()
+        },
+    ));
 
     // spawn water
     let water_depth = window.height();
