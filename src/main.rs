@@ -2,8 +2,10 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 mod enemy;
+mod game_over;
 mod level;
 mod menu;
+mod pause;
 mod player;
 mod score;
 mod state;
@@ -20,10 +22,19 @@ fn main() {
         .add_plugin(level::LevelPlugin)
         .add_plugin(player::PlayerPlugin)
         .add_plugin(score::ScorePlugin)
+        .add_plugin(game_over::GameOverPlugin)
+        .add_plugin(pause::PausePlugin)
+        .add_system(end_game)
         .add_startup_system(setup_camera)
         // TODO remove this only for looking around when dev testing
         // .add_system(camera_controller)
         .run();
+}
+
+fn end_game(keys: Res<Input<KeyCode>>, mut next_state: ResMut<NextState<state::AppState>>) {
+    if keys.just_pressed(KeyCode::P) {
+        next_state.set(state::AppState::GameOver);
+    }
 }
 
 #[derive(Component)]

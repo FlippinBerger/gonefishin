@@ -16,9 +16,6 @@ impl Plugin for EnemyPlugin {
         app.add_startup_system(setup_fish_spawning).add_systems(
             (spawn_fish, fish_collision, fish_swim).in_set(OnUpdate(state::AppState::Running)),
         );
-        // .add_system(spawn_fish)
-        // .add_system(fish_collision)
-        // .add_system(fish_swim);
     }
 }
 
@@ -143,6 +140,7 @@ fn fish_collision(
     rap_ctx: Res<RapierContext>,
     explosion_q: Query<Entity, With<player::Explosion>>,
     mut fish_q: Query<&mut Fish>,
+    mut next_state: ResMut<NextState<state::AppState>>,
 ) {
     for explosion_entity in explosion_q.iter() {
         for contact_pair in rap_ctx.contacts_with(explosion_entity) {
@@ -161,6 +159,7 @@ fn fish_collision(
                     }
                     FishType::Turtle => {
                         // end the game here
+                        next_state.set(state::AppState::GameOver);
                     }
                 }
             } else {

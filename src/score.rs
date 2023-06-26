@@ -24,7 +24,7 @@ fn setup_score(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         ScoreText {},
         TextBundle::from_section(
-            "912834",
+            "0",
             TextStyle {
                 font: asset_server.load("fonts/OpenSans.ttf"),
                 font_size: 45.,
