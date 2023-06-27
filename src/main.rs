@@ -16,7 +16,8 @@ fn main() {
         .add_state::<state::AppState>()
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.))
-        .add_plugin(RapierDebugRenderPlugin::default())
+        // TODO turn this on to see colliders
+        // .add_plugin(RapierDebugRenderPlugin::default())
         .insert_resource(ClearColor(Color::rgb(0.77, 0.93, 0.97)))
         .add_plugin(enemy::EnemyPlugin)
         .add_plugin(level::LevelPlugin)

@@ -13,9 +13,11 @@ pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(setup_fish_spawning).add_systems(
-            (spawn_fish, fish_collision, fish_swim).in_set(OnUpdate(state::AppState::Running)),
-        );
+        app.add_startup_system(setup_fish_spawning)
+            .add_systems(
+                (spawn_fish, fish_collision, fish_swim).in_set(OnUpdate(state::AppState::Running)),
+            )
+            .add_system(clean_up_fish.in_schedule(OnEnter(state::AppState::GameOver)));
     }
 }
 
@@ -166,5 +168,11 @@ fn fish_collision(
                 warn!("couldn't get the fish");
             }
         }
+    }
+}
+
+fn clean_up_fish(mut commands: Commands, fish_q: Query<Entity, With<Fish>>) {
+    for e in fish_q.iter() {
+        commands.entity(e).despawn_recursive();
     }
 }

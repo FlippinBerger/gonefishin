@@ -12,18 +12,22 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(player_setup).add_systems(
-            (
-                animate_sprites,
-                player_movement,
-                flip_player,
-                bomb_drop,
-                bomb_movement,
-                clear_explosion,
-                check_for_fish,
+        app.add_startup_system(player_setup)
+            .add_systems(
+                (
+                    animate_sprites,
+                    player_movement,
+                    flip_player,
+                    bomb_drop,
+                    bomb_movement,
+                    clear_explosion,
+                    check_for_fish,
+                )
+                    .in_set(OnUpdate(state::AppState::Running)),
             )
-                .in_set(OnUpdate(state::AppState::Running)),
-        );
+            .add_systems(
+                (reset_player, clear_explosions).in_schedule(OnEnter(state::AppState::GameOver)),
+            );
     }
 }
 
@@ -43,6 +47,19 @@ struct AnimationIndices {
 
 #[derive(Component, Deref, DerefMut)]
 struct AnimationTimer(Timer);
+
+fn reset_player(
+    mut player_q: Query<(&mut Transform, &mut Direction), With<Player>>,
+    window_q: Query<&Window>,
+) {
+    let (mut transform, mut direction) = player_q.single_mut();
+
+    let window = window_q.single();
+    let player_start = window.height() / 2. - 150. + 32.;
+
+    *transform = Transform::from_xyz(0., player_start, 1.);
+    direction.dir = types::Dir::Forward;
+}
 
 fn player_setup(
     mut commands: Commands,
@@ -207,6 +224,7 @@ fn detonate_bomb(
     commands.entity(entity).despawn();
 }
 
+// used to clear the explosion off screen after a certain time
 fn clear_explosion(
     mut commands: Commands,
     time: Res<Time>,
@@ -215,8 +233,15 @@ fn clear_explosion(
     for (entity, mut explosion) in q.iter_mut() {
         explosion.timer.tick(time.delta());
         if explosion.timer.finished() {
-            commands.entity(entity).despawn();
+            commands.entity(entity).despawn_recursive();
         }
+    }
+}
+
+// called when the game ends to clear explosions from the scene
+fn clear_explosions(mut commands: Commands, mut q: Query<Entity, With<Explosion>>) {
+    for e in q.iter() {
+        commands.entity(e).despawn_recursive();
     }
 }
 

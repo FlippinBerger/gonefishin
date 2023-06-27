@@ -8,7 +8,8 @@ impl Plugin for ScorePlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(setup_score)
             .insert_resource(Score { val: 0 })
-            .add_system(update_score.in_set(OnUpdate(state::AppState::Running)));
+            .add_system(update_score)
+            .add_system(reset_score.in_schedule(OnExit(state::AppState::GameOver)));
     }
 }
 
@@ -48,4 +49,8 @@ fn update_score(score: Res<Score>, mut text_q: Query<&mut Text, With<ScoreText>>
     let mut text = text_q.single_mut();
 
     text.sections[0].value = format!("{}", score.val);
+}
+
+fn reset_score(mut score: ResMut<Score>) {
+    score.val = 0;
 }
